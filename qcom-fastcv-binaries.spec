@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 
 Name:           qcom-fastcv-binaries
-Version:        1.8.9
-Release:        2%{?dist}
+Version:        1.8.10
+Release:        1%{?dist}
 Summary:        Qualcomm FastCV - DSP binaries and optimized CV library
 License:        LicenseRef-Qualcomm-nologin-binaries
 URL:            https://www.qualcomm.com/developer/software/qualcomm-fastcv-sdk
-Source0:        https://qartifactory-edge.qualcomm.com/artifactory/qsc_releases/software/chip/component/computervision-fastcv.qclinux.0.1/260805/prebuilt_trixie/qcom-fastcv-binaries_1.8.9_arm64.tar.gz
+Source0:        https://qartifactory-edge.qualcomm.com/artifactory/qsc_releases/software/chip/component/computervision-fastcv.qclinux.0.1/260928/prebuilt_trixie/qcom-fastcv-binaries_1.8.10_arm64.tar.gz
 
 ExclusiveArch:  aarch64
 
@@ -64,16 +64,17 @@ cp -a qcom-fastcv-binaries1/arm64/usr/lib/dsp/. %{buildroot}%{_libdir}/dsp/
 
 # Shared libraries (libfastcvopt1)
 install -d %{buildroot}%{_libdir}
+install -d %{buildroot}%{_libdir}/fastcv
 install -m 0755 qcom-fastcv-binaries1/arm64/usr/lib/aarch64-linux-gnu/libfastcvopt.so.1.8.0 %{buildroot}%{_libdir}/libfastcvopt.so.1.8.0
 ln -s libfastcvopt.so.1.8.0 %{buildroot}%{_libdir}/libfastcvopt.so.1
-install -m 0755 qcom-fastcv-binaries1/arm64/usr/lib/aarch64-linux-gnu/libfastcvdsp_stub.so.1.8.0 %{buildroot}%{_libdir}/libfastcvdsp_stub.so.1.8.0
-ln -s libfastcvdsp_stub.so.1.8.0 %{buildroot}%{_libdir}/libfastcvdsp_stub.so.1
+install -m 0755 qcom-fastcv-binaries1/arm64/usr/lib/aarch64-linux-gnu/fastcv/libfastcvdsp_stub.so.1.8.0 %{buildroot}%{_libdir}/fastcv/libfastcvdsp_stub.so.1.8.0
+ln -s libfastcvdsp_stub.so.1.8.0 %{buildroot}%{_libdir}/fastcv/libfastcvdsp_stub.so.1
 
 # Development headers and unversioned .so symlinks (libfastcvopt-devel)
 install -d %{buildroot}%{_includedir}/fastcv
 cp -a qcom-fastcv-binaries-dev/arm64/usr/include/fastcv/. %{buildroot}%{_includedir}/fastcv/
 ln -s libfastcvopt.so.1.8.0 %{buildroot}%{_libdir}/libfastcvopt.so
-ln -s libfastcvdsp_stub.so.1.8.0 %{buildroot}%{_libdir}/libfastcvdsp_stub.so
+ln -s libfastcvdsp_stub.so.1.8.0 %{buildroot}%{_libdir}/fastcv/libfastcvdsp_stub.so
 install -d %{buildroot}%{_libdir}/pkgconfig
 cp -a qcom-fastcv-binaries-dev/arm64/usr/lib/aarch64-linux-gnu/pkgconfig/. %{buildroot}%{_libdir}/pkgconfig/
 
@@ -91,14 +92,14 @@ find %{buildroot} -name '*.la' -delete
 %license LICENSE.qcom-2
 %{_libdir}/libfastcvopt.so.1
 %{_libdir}/libfastcvopt.so.1.8.0
-%{_libdir}/libfastcvdsp_stub.so.1
-%{_libdir}/libfastcvdsp_stub.so.1.8.0
+%{_libdir}/fastcv/libfastcvdsp_stub.so.1
+%{_libdir}/fastcv/libfastcvdsp_stub.so.1.8.0
 
 %files -n libfastcvopt-devel
 %license LICENSE.qcom-2
 %{_includedir}/fastcv/
 %{_libdir}/libfastcvopt.so
-%{_libdir}/libfastcvdsp_stub.so
+%{_libdir}/fastcv/libfastcvdsp_stub.so
 %{_libdir}/pkgconfig/
 
 %files utils
@@ -106,8 +107,12 @@ find %{buildroot} -name '*.la' -delete
 %{_bindir}/fastcv_simple_test64
 
 %changelog
+* Wed Sep 30 2026 Pulkit Singh Tak <ptak@qti.qualcomm.com> - 1.8.10-1
+- Move libfastcvdsp_stub.so to the private library directory.
+- Fix KLT module failure on CDSP for Shikra.
+
 * Thu Sep 24 2026 Pulkit Singh Tak <ptak@qti.qualcomm.com> - 1.8.9-2
 - Add rules to install License file .
 
-* Wed Aug 13 2026 Pulkit Singh Tak <ptak@qti.qualcomm.com> - 1.8.9-1
+* Thu Aug 13 2026 Pulkit Singh Tak <ptak@qti.qualcomm.com> - 1.8.9-1
 - Initial RPM packaging of qcom-fastcv-binaries prebuilt libraries version 1.8.9
