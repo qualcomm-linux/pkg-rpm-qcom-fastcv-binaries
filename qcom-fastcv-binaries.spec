@@ -1,8 +1,14 @@
 %global debug_package %{nil}
 
+# The DSP libraries are Hexagon ELF objects. Their DT_NEEDED entries (libc.so,
+# libgcc.so, ...) refer to the DSP runtime, not to host libraries, so rpm must
+# not turn them into host Requires/Provides.
+%global __requires_exclude_from ^(%{_libdir}|%{_datadir})/.*dsp/.*$
+%global __provides_exclude_from ^(%{_libdir}|%{_datadir})/.*dsp/.*$
+
 Name:           qcom-fastcv-binaries
 Version:        1.8.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Qualcomm FastCV - DSP binaries and optimized CV library
 License:        LicenseRef-Qualcomm-nologin-binaries
 URL:            https://www.qualcomm.com/developer/software/qualcomm-fastcv-sdk
@@ -107,6 +113,9 @@ find %{buildroot} -name '*.la' -delete
 %{_bindir}/fastcv_simple_test64
 
 %changelog
+* Fri Nov 13 2026 Pulkit Singh Tak <ptak@qti.qualcomm.com> - 1.8.10-2
+- Exclude DSP binaries from automatic RPM dependency generation.
+
 * Wed Sep 30 2026 Pulkit Singh Tak <ptak@qti.qualcomm.com> - 1.8.10-1
 - Move libfastcvdsp_stub.so to the private library directory.
 - Fix KLT module failure on CDSP for Shikra.
